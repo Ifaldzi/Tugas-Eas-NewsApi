@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Tugas Eas</string>
+    <string name="API_KEY">9e9bb9e225e4463ba988029176d06585</string>
+    <string name="url_source"><u>%1$s</u></string>
+    <string name="url_source_example"><u>https://example.com</u></string>
+    <string name="author">Author: %1$s</string>
+</resources>
