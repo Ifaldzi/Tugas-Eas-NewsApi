@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.jtk.tugaseas.Data.Models.Article
@@ -40,6 +41,7 @@ class NewsDetailActivity : AppCompatActivity() {
         val image = findViewById<ImageView>(R.id.news_image_detail)
         val description = findViewById<TextView>(R.id.news_description)
         val urlSource = findViewById<TextView>(R.id.news_url_source)
+        val readMoreButton = findViewById<Button>(R.id.read_more_button)
 
         title.text = article.title
         publisher.text = article.source.name
@@ -53,7 +55,7 @@ class NewsDetailActivity : AppCompatActivity() {
         description.text = article.description
         urlSource.text = getString(R.string.url_source, article.url)
 
-        urlSource.setOnClickListener {
+        readMoreButton.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW)
             browserIntent.setData(Uri.parse(article.url))
             startActivity(browserIntent)

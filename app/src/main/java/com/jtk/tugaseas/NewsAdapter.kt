@@ -26,7 +26,7 @@ class NewsAdapter : ListAdapter<Article, NewsAdapter.ViewHolder>(NewsDiffCallbac
 
         fun bind(article: Article) {
             headlineTitle.text = article.title
-            newsDate.text = SimpleDateFormat("dd MM yyyy", Locale.ENGLISH).format(article.publishedAt)
+            newsDate.text = SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH).format(article.publishedAt)
             newsPublisher.text = article.source.name
             if(TextUtils.isEmpty(article.image))
                 newsImage.setImageResource(R.drawable.image_not_avail)
