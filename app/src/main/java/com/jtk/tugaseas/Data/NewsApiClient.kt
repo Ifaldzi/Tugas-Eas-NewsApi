@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class NewsApiClient {
     companion object {
         private final val BASE_URL = "https://newsapi.org/v2/"
-        var retrofit: Retrofit? = null
+        private var retrofit: Retrofit? = null
 
         fun getApiClient(): Retrofit? {
             if(retrofit == null) {

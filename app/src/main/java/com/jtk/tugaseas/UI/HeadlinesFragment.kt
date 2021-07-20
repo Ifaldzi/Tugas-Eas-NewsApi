@@ -17,6 +17,7 @@ import com.jtk.tugaseas.R
 import androidx.fragment.app.viewModels
 import com.jtk.tugaseas.Data.Models.Response
 import com.jtk.tugaseas.Data.NewsApiClient
+import com.jtk.tugaseas.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -24,7 +25,7 @@ class HeadlinesFragment : Fragment() {
 
     private var newsApi: NewsApi? = null
 
-    private val newsViewModel: NewsViewModel by viewModels()
+    lateinit var newsViewModel: NewsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +35,8 @@ class HeadlinesFragment : Fragment() {
         val view = inflater.inflate(R.layout.headline_fragment, container, false)
 
         activity?.title = "Headlines"
+
+        newsViewModel = (activity as MainActivity).newsViewModel
 
         val newsAdapter = NewsAdapter()
         val dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
@@ -50,9 +53,9 @@ class HeadlinesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        super.onStart()
         newsApi = NewsApiClient.getApiClient()?.create(NewsApi::class.java)
-        getNews()
+        if (savedInstanceState == null)
+            getNews()
     }
 
     private fun getNews() {

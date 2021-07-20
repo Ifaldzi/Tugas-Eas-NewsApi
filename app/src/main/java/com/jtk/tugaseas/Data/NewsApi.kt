@@ -25,6 +25,7 @@ interface NewsApi {
     @Headers("Authorization: 9e9bb9e225e4463ba988029176d06585")
     @GET("top-headlines")
     fun getNewsByCategory(
-        @Query("category") category: String
+        @Query("category") category: String,
+        @Query("country") country: String = "id"
     ) : Call<Response>
 }

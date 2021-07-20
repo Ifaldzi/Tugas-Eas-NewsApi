@@ -4,4 +4,5 @@
     <string name="url_source"><u>%1$s</u></string>
     <string name="url_source_example"><u>https://example.com</u></string>
     <string name="author">Author: %1$s</string>
+    <string name="search_result_label">News for \"%1$s\"</string>
 </resources>

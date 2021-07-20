@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -24,6 +25,8 @@ class SearchFragment : Fragment() {
     private val newsViewModel: NewsViewModel by viewModels()
     private lateinit var progressBar: ProgressBar
 
+    lateinit var searchResultLabel: TextView
+
     companion object {
         fun getInstance() : Fragment {
             return SearchFragment()
@@ -38,6 +41,8 @@ class SearchFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_search, container, false)
 
         activity?.title = "News Discovery"
+
+        searchResultLabel = view.findViewById<TextView>(R.id.search_result_label)
 
         val newsSearchRecyclerView = view.findViewById<RecyclerView>(R.id.news_search_results)
         val newsAdapter = NewsAdapter()
@@ -56,6 +61,9 @@ class SearchFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchNews(query)
                 Log.d("Search V", "Searching..")
+                if (query != null) {
+                    changeSearchResultLabel(query)
+                }
                 return true
             }
 
@@ -70,12 +78,18 @@ class SearchFragment : Fragment() {
             override fun onItemClick(position: Int) {
                 val category = categories[position]
                 getNewsByCategory(category.name)
+                changeSearchResultLabel(category.name)
             }
         })
         val categoryRecyclerView = view.findViewById<RecyclerView>(R.id.category_list)
         categoryRecyclerView.adapter = categoryAdapter
 
         return view
+    }
+
+    private fun changeSearchResultLabel(label: String) {
+        searchResultLabel.text = getString(R.string.search_result_label, label);
+        searchResultLabel.visibility = View.VISIBLE
     }
 
     private fun searchNews(query: String?) {

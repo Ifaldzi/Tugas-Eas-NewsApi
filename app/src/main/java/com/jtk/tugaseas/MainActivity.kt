@@ -25,15 +25,16 @@ class MainActivity : AppCompatActivity() {
 
     var newsApi: NewsApi? = null
 
-    val newsViewModel: NewsViewModel by viewModels()
+    public val newsViewModel: NewsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         newsApi = NewsApiClient.getApiClient()?.create(NewsApi::class.java)
-        
-        loadFragment(HeadlinesFragment())
+
+        if (savedInstanceState == null)
+            loadFragment(HeadlinesFragment())
         
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_nav)
         bottomNavigation.setOnItemSelectedListener{
@@ -51,27 +52,6 @@ class MainActivity : AppCompatActivity() {
             loadFragment(fragment)
         }
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-//        val inflater = menuInflater
-//        inflater.inflate(R.menu.menu, menu)
-//
-//        val searchViewItem = menu?.findItem(R.id.app_bar_search)
-//        val searchView = searchViewItem?.actionView as SearchView
-//
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                searchNews(query)
-//                return true
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                return true
-//            }
-//        })
-//
-//        return super.onCreateOptionsMenu(menu)
-//    }
     
     private fun loadFragment(fragment: Fragment?) : Boolean {
         if (fragment != null) {
@@ -81,31 +61,5 @@ class MainActivity : AppCompatActivity() {
             return true
         }
         return false
-    }
-
-    private fun searchNews(query: String?) {
-        val call = query?.let { newsApi?.searchNews(it) }
-
-        call.let {
-            it?.enqueue(object : Callback<Response> {
-                override fun onResponse(
-                    call: Call<Response>,
-                    response: retrofit2.Response<Response>
-                ) {
-                    if (response.isSuccessful) {
-                        val data = response.body()
-                        data?.articles?.let { it -> newsViewModel.updateNews(it) }
-
-                        Log.d("API CALL", data?.articles?.size.toString())
-                    }
-                    Log.d("API CALL", response.code().toString())
-                }
-
-                override fun onFailure(call: Call<Response>, t: Throwable) {
-                    t.message?.let { it -> Log.e("API ERR", it) }
-                }
-
-            })
-        }
     }
 }
