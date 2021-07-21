@@ -35,7 +35,11 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null)
             loadFragment(HeadlinesFragment())
-        
+
+        initiateBottomNavigation()
+    }
+
+    private fun initiateBottomNavigation() {
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_nav)
         bottomNavigation.setOnItemSelectedListener{
             var fragment: Fragment? = null

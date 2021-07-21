@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,8 @@ class HeadlinesFragment : Fragment() {
 
     lateinit var newsViewModel: NewsViewModel
 
+    private lateinit var errorText: TextView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,15 +41,13 @@ class HeadlinesFragment : Fragment() {
 
         newsViewModel = (activity as MainActivity).newsViewModel
 
-        val newsAdapter = NewsAdapter()
-        val dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.news_list)
-        recyclerView.adapter = newsAdapter
-        recyclerView.addItemDecoration(dividerItem)
+        errorText = view.findViewById<TextView>(R.id.error_load_text)
 
-        newsViewModel.news.observe(viewLifecycleOwner) {news ->
-            news.let { newsAdapter.submitList(it) }
+        errorText.setOnClickListener {
+            getNews()
         }
+
+        initiateRecyclerView(view)
 
         return view
     }
@@ -58,11 +59,25 @@ class HeadlinesFragment : Fragment() {
             getNews()
     }
 
+    private fun initiateRecyclerView(view: View) {
+        val newsAdapter = NewsAdapter()
+        val dividerItem = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.news_list)
+        recyclerView.adapter = newsAdapter
+        recyclerView.addItemDecoration(dividerItem)
+
+        newsViewModel.news.observe(viewLifecycleOwner) {news ->
+            news.let { newsAdapter.submitList(it) }
+        }
+    }
+
     private fun getNews() {
         val call: Call<Response>? = newsApi?.getHeadlinesFromIndonesia()
 
         val progressBar = view?.findViewById<ProgressBar>(R.id.news_progress_bar)
         progressBar?.visibility = View.VISIBLE
+
+        errorText.visibility = View.GONE
 
         call.let {
             it?.enqueue(object : Callback<Response> {
@@ -85,6 +100,7 @@ class HeadlinesFragment : Fragment() {
                     t.message?.let { it1 -> Log.e("API Error", it1) }
 
                     progressBar?.visibility = View.GONE
+                    errorText?.visibility = View.VISIBLE
                 }
 
             })

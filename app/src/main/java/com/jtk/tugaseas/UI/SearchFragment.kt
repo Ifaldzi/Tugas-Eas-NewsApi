@@ -26,6 +26,9 @@ class SearchFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
 
     lateinit var searchResultLabel: TextView
+    private lateinit var newsSearchRecyclerView: RecyclerView
+    private lateinit var searchView: SearchView
+    private lateinit var categoryRecyclerView: RecyclerView
 
     companion object {
         fun getInstance() : Fragment {
@@ -42,9 +45,20 @@ class SearchFragment : Fragment() {
 
         activity?.title = "News Discovery"
 
-        searchResultLabel = view.findViewById<TextView>(R.id.search_result_label)
+        newsApi = NewsApiClient.getApiClient()?.create(NewsApi::class.java)
 
-        val newsSearchRecyclerView = view.findViewById<RecyclerView>(R.id.news_search_results)
+        initiateSearchLayoutComponent(view)
+
+        return view
+    }
+
+    private fun initiateSearchLayoutComponent(view: View) {
+        searchResultLabel = view.findViewById<TextView>(R.id.search_result_label)
+        newsSearchRecyclerView = view.findViewById<RecyclerView>(R.id.news_search_results)
+        progressBar = view.findViewById(R.id.news_progress_bar)
+        searchView = view.findViewById<SearchView>(R.id.search_news_view)
+        categoryRecyclerView = view.findViewById<RecyclerView>(R.id.category_list)
+
         val newsAdapter = NewsAdapter()
         newsSearchRecyclerView.adapter = newsAdapter
 
@@ -52,11 +66,21 @@ class SearchFragment : Fragment() {
             news.let { newsAdapter.submitList(it) }
         }
 
-        progressBar = view.findViewById(R.id.news_progress_bar)
+        val categories = Category.getNewsApiCategory()
+        val categoryAdapter = CategoryAdapter(categories, object : CategoryAdapter.ClickItemListener {
+            override fun onItemClick(position: Int) {
+                val category = categories[position]
+                getNewsByCategory(category.name)
+                changeSearchResultLabel(category.name)
+            }
+        })
 
-        newsApi = NewsApiClient.getApiClient()?.create(NewsApi::class.java)
+        categoryRecyclerView.adapter = categoryAdapter
 
-        val searchView = view.findViewById<SearchView>(R.id.search_news_view)
+        configureSearchView()
+    }
+
+    private fun configureSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchNews(query)
@@ -72,19 +96,6 @@ class SearchFragment : Fragment() {
             }
 
         })
-
-        val categories = Category.getNewsApiCategory()
-        val categoryAdapter = CategoryAdapter(categories, object : CategoryAdapter.ClickItemListener {
-            override fun onItemClick(position: Int) {
-                val category = categories[position]
-                getNewsByCategory(category.name)
-                changeSearchResultLabel(category.name)
-            }
-        })
-        val categoryRecyclerView = view.findViewById<RecyclerView>(R.id.category_list)
-        categoryRecyclerView.adapter = categoryAdapter
-
-        return view
     }
 
     private fun changeSearchResultLabel(label: String) {
